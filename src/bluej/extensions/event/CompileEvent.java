@@ -67,6 +67,7 @@ public class CompileEvent implements ExtensionEvent
   private int    eventId;
   private File[] fileNames;   // An array of names this event belong to
   private int    errorLineNumber;
+  private int    errorColumnNumber;
   private String errorMessage;
 
   /**
@@ -110,6 +111,23 @@ public class CompileEvent implements ExtensionEvent
   public int getErrorLineNumber ( )
     {
     return errorLineNumber;
+    }
+  
+  /**
+   * Sets the column number where an error or warning occurred.
+   */
+  public void setErrorColumnNumber ( int aColumnNumber )
+    {
+    errorLineNumber = aColumnNumber;
+    }
+
+  /**
+   * Returns the column number where the compilation error occurs.
+   * Only valid in the case of an error or warning event.
+   */
+  public int getErrorColumnNumber ( )
+    {
+    return errorColumnNumber;
     }
 
   /**
@@ -155,6 +173,7 @@ public class CompileEvent implements ExtensionEvent
     if ( eventId == COMPILE_WARNING_EVENT || eventId == COMPILE_ERROR_EVENT )
       {
       aRisul.append(" errorLineNumber="+errorLineNumber);
+      aRisul.append(" errorColumnNumber="+errorColumnNumber);
       aRisul.append(" errorMessage="+errorMessage);
       }
 
