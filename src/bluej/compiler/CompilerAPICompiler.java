@@ -118,6 +118,7 @@ public class CompilerAPICompiler extends Compiler
         List<Diagnostic<? extends JavaFileObject>> diagnosticList = diagnostics.getDiagnostics();        
         String src = null;
         int pos = 0;
+        int col = 0;
         String msg = null;
         boolean error = false;
         boolean warning = false;
@@ -161,14 +162,15 @@ public class CompilerAPICompiler extends Compiler
                 URI srcUri = sources[0].toURI().resolve(diagnostic.getSource().toUri());
                 src = new File(srcUri).toString();
             }
-            pos = (int)diagnostic.getLineNumber();
+            pos = (int) diagnostic.getLineNumber();
+            col = (int) diagnostic.getColumnNumber();
 
             // Handle compiler error messages 
             if (error) 
             {
                 result = false;          
                 msg = processMessage(src, pos, diagnostic.getMessage(null));  
-                observer.errorMessage(src, pos, msg);
+                observer.errorMessage(src, pos, col, msg);
             }
             // Handle compiler warning messages  
             // If it is a warning message, need to get all the messages
@@ -185,7 +187,7 @@ public class CompilerAPICompiler extends Compiler
                     else
                     {
                         msg = diagnosticList.get(i).getMessage(null);
-                        observer.warningMessage(src, pos, msg);
+                        observer.warningMessage(src, pos, col, msg);
                     }
                 }              
             }
@@ -197,7 +199,7 @@ public class CompilerAPICompiler extends Compiler
      * Processes messages returned from the compiler. This just slightly adjusts the format of some
      * messages.
      */
-    protected String processMessage(String src, int pos, String message)
+    protected String processMessage(String src, long pos, String message)
     {
         // For JDK 6, the message is in this format: 
         //   path and filename:line number:message
@@ -252,5 +254,11 @@ public class CompilerAPICompiler extends Compiler
             }
         }
         return message;
+    }
+    
+    @Deprecated
+    protected String processMessage(String src, int pos, String message)
+    {
+        return processMessage(src, pos, message);
     }
 }

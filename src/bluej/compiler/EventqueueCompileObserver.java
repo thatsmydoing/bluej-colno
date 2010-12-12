@@ -49,6 +49,7 @@ final public class EventqueueCompileObserver
     // parameters for COMMAND_ERROR/COMMAND_WARNING
     private String filename;
     private int lineNo;
+    private int columnNo;
     private String message;
     
     /**
@@ -81,22 +82,36 @@ final public class EventqueueCompileObserver
         runOnEventQueue();
     }
 
-    public synchronized void errorMessage(String filename, int lineNo, String message)
+    public synchronized void errorMessage(String filename, int lineNo, int columnNo, String message)
     {
         command = COMMAND_ERROR;
         this.filename = filename;
         this.lineNo = lineNo;
+        this.columnNo = columnNo;
         this.message = message;
         runOnEventQueue();
     }
+    
+    @Deprecated
+    public synchronized void errorMessage(String filename, int lineNo, String message)
+    {
+        errorMessage(filename, lineNo, 0, message);
+    }
 
-    public synchronized void warningMessage(String filename, int lineNo, String message)
+    public synchronized void warningMessage(String filename, int lineNo, int columnNo, String message)
     {
         command = COMMAND_WARNING;
         this.filename = filename;
         this.lineNo = lineNo;
+        this.columnNo = columnNo;
         this.message = message;
         runOnEventQueue();
+    }
+    
+    @Deprecated
+    public synchronized void warningMessage(String filename, int lineNo, String message)
+    {
+        errorMessage(filename, lineNo, 0, message);
     }
 
     public synchronized void endCompile(File[] sources, boolean successful)
@@ -119,10 +134,10 @@ final public class EventqueueCompileObserver
                 link.startCompile(sources);
                 break;
             case COMMAND_ERROR:
-                link.errorMessage(filename, lineNo, message);
+                link.errorMessage(filename, lineNo, columnNo, message);
                 break;
             case COMMAND_WARNING:
-                link.warningMessage(filename, lineNo, message);
+                link.warningMessage(filename, lineNo, columnNo, message);
                 break;
             case COMMAND_END:
                 link.endCompile(sources, successful);

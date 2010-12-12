@@ -1003,7 +1003,7 @@ public class Invoker
     /**
      * An error was detected during compilation of the shell class.
      */
-    public void errorMessage(String filename, int lineNo, String message)
+    public void errorMessage(String filename, int lineNo, int columnNo, String message)
     {
         if (dialog != null) {
             dialog.setErrorMessage("Error: " + message);
@@ -1012,11 +1012,29 @@ public class Invoker
     }
     
     /**
+     * @deprecated Replaced by {@link #errorMessage(String filename, int lineNo, int columnNo, String message)}
+     */
+    @Deprecated
+    public void errorMessage(String filename, int lineNo, String message)
+    {
+        errorMessage(filename, lineNo, 0, message);
+    }
+    
+    /**
      * A warning was detected during compilation of the shell class.
      * For the shell class, we just ignore warnings.
      */
-    public void warningMessage(String filename, int lineNo, String message) 
+    public void warningMessage(String filename, int lineNo, int columnNo, String message) 
     {
+    }
+    
+    /**
+     * @deprecated Replaced by {@link #warningMessage(String filename, int lineNo, int columnNo, String message)}
+     */
+    @Deprecated
+    public void warningMessage(String filename, int lineNo, String message)
+    {
+        warningMessage(filename, lineNo, 0, message);
     }
 
     /**

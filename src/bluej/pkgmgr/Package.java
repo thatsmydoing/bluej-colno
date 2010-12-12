@@ -2124,12 +2124,19 @@ public final class Package extends Graph
         public String calculateMessage(Editor e);
     }
     
+    private boolean showEditorMessage(String filename, int lineNo, final int columnNo, final String message, boolean beep,
+            boolean bringToFront, boolean setStepMark, String help)
+    {
+        return showEditorMessage(filename, lineNo, columnNo, new MessageCalculator() {
+            public String calculateMessage(Editor e) { return message + ", column:" + columnNo; }
+          }, beep, bringToFront, setStepMark, help);
+    }
+    
+    @Deprecated
     private boolean showEditorMessage(String filename, int lineNo, final String message, boolean beep,
             boolean bringToFront, boolean setStepMark, String help)
     {
-        return showEditorMessage(filename, lineNo, new MessageCalculator() {
-            public String calculateMessage(Editor e) { return message; }
-          }, beep, bringToFront, setStepMark, help);
+        return showEditorMessage(filename, lineNo, 0, message, beep, bringToFront, setStepMark, help);
     }
 
     /**
@@ -2137,7 +2144,7 @@ public final class Package extends Graph
      * is done by opening the class's source, highlighting the line and showing
      * the message in the editor's information area.
      */
-    private boolean showEditorMessage(String filename, int lineNo, MessageCalculator messageCalc, boolean beep,
+    private boolean showEditorMessage(String filename, int lineNo, int columnNo, MessageCalculator messageCalc, boolean beep,
             boolean bringToFront, boolean setStepMark, String help)
     {
         String fullName = getProject().convertPathToPackageName(filename);
@@ -2178,6 +2185,13 @@ public final class Package extends Graph
             Debug.message(t.getDisplayName() + ", line" + lineNo + ": " + messageCalc.calculateMessage(null));
         }
         return true;
+    }
+    
+    @Deprecated
+    private boolean showEditorMessage(String filename, int lineNo, MessageCalculator messageCalc, boolean beep,
+            boolean bringToFront, boolean setStepMark, String help)
+    {
+        return showEditorMessage(filename, lineNo, 0, messageCalc, beep, bringToFront, setStepMark, help);
     }
 
     /**
@@ -2364,7 +2378,7 @@ public final class Package extends Graph
             }
         }
 
-        private void sendEventToExtensions(String filename, int lineNo, String message, int eventType)
+        private void sendEventToExtensions(String filename, int lineNo, int columnNo, String message, int eventType)
         {
             File [] sources;
             if (filename != null) {
@@ -2376,8 +2390,15 @@ public final class Package extends Graph
             }
             CompileEvent aCompileEvent = new CompileEvent(eventType, sources);
             aCompileEvent.setErrorLineNumber(lineNo);
+            aCompileEvent.setErrorColumnNumber(columnNo);
             aCompileEvent.setErrorMessage(message);
             ExtensionsManager.getInstance().delegateEvent(aCompileEvent);
+        }
+        
+        @Deprecated
+        private void sendEventToExtensions(String filename, int lineNo, String message, int eventType)
+        {
+          sendEventToExtensions(filename, lineNo, 0, message, eventType);
         }
 
         /**
@@ -2397,18 +2418,30 @@ public final class Package extends Graph
             markAsCompiling(sources);
         }
 
+        public void errorMessage(String filename, int lineNo, int columnNo, String message)
+        {
+            // Send a compilation Error event to extensions.
+            sendEventToExtensions(filename, lineNo, columnNo, message, CompileEvent.COMPILE_ERROR_EVENT);
+        }
+        
+        @Deprecated
         public void errorMessage(String filename, int lineNo, String message)
         {
-            // Send a compilation Error event to extensions.
-            sendEventToExtensions(filename, lineNo, message, CompileEvent.COMPILE_ERROR_EVENT);
+            errorMessage(filename, lineNo, 0, message);
         }
-
-        public void warningMessage(String filename, int lineNo, String message)
+        
+        public void warningMessage(String filename, int lineNo, int columnNo, String message)
         {
             // Send a compilation Error event to extensions.
-            sendEventToExtensions(filename, lineNo, message, CompileEvent.COMPILE_WARNING_EVENT);
+            sendEventToExtensions(filename, lineNo, columnNo, message, CompileEvent.COMPILE_WARNING_EVENT);
         }
-
+        
+        @Deprecated
+        public void warningMessage(String filename, int lineNo, String message)
+        {
+            warningMessage(filename, lineNo, 0, message);
+        }
+        
         /**
          * Compilation has ended. Mark the affected classes as being normal
          * again.
@@ -2616,9 +2649,9 @@ public final class Package extends Graph
          * This is done by opening the class's source, highlighting the line and
          * showing the message in the editor's information area.
          */
-        public void errorMessage(String filename, int lineNo, String message)
+        public void errorMessage(String filename, int lineNo, int columnNo, String message)
         {
-            super.errorMessage(filename, lineNo, message);
+            super.errorMessage(filename, lineNo, columnNo, message);
             
             boolean messageShown;
             
@@ -2636,6 +2669,15 @@ public final class Package extends Graph
                 showMessageWithText("error-in-file", filename + ":" + lineNo + "\n" + message);
             }
         }
+        
+        /**
+         * @deprecated Replaced by {@link #errorMessage(String filename, int lineNo, int columnNo, String message)}
+         */
+        @Deprecated
+        public void errorMessage(String filename, int lineNo, String message)
+        {
+            errorMessage(filename, lineNo, 0, message);
+        }
 
         /**
          * Display a warning message: just a dialog box
@@ -2645,12 +2687,21 @@ public final class Package extends Graph
          * into a single dialog.
          * If searchCompile() built a single list, we wouldn't need to do this
          */
-        public void warningMessage(String filename, int lineNo, String message)
+        public void warningMessage(String filename, int lineNo, int columnNo, String message)
         {
-            super.warningMessage(filename, lineNo, message);
+            super.warningMessage(filename, lineNo, columnNo, message);
             
             // Add this message-fragment to, and display, the warning dialog
             bluej.compiler.CompilerWarningDialog.getDialog().addWarningMessage(message);
+        }
+        
+        /**
+         * @deprecated Replaced by {@link #warningMessage(String filename, int lineNo, int columnNo, String message)}
+         */
+        @Deprecated
+        public void warningMessage(String filename, int lineNo, String message)
+        {
+            warningMessage(filename, lineNo, 0, message);
         }
     }
 

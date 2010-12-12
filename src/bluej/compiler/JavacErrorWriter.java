@@ -28,12 +28,13 @@ import bluej.utility.DialogManager;
 
 public class JavacErrorWriter extends Writer
 {
-    private boolean haserror = false, hasfollowup = false, hasWarnings = false;
+    private boolean ignore = false, haserror = false, hasfollowup = false, hasWarnings = false;
     private int ignoreCount = 0;    // when > 0, indicates number of lines to ignore
 
     private String filename, message;
     private String warning = "";
     private int lineno;
+    private int columnno;
     
     private boolean internal;
     
@@ -73,6 +74,11 @@ public class JavacErrorWriter extends Writer
     public int getLineNo()
     {
         return lineno;
+    }
+    
+    public int getColumnNo()
+    {
+        return columnno;
     }
 
     public String getMessage()
@@ -124,9 +130,15 @@ public class JavacErrorWriter extends Writer
 
     private void processLine(String msg)
     {
-        if (haserror)
+        if (ignore)
             return;
-            
+        
+        if (haserror) {
+            columnno = msg.indexOf("^") + 1;
+            ignore = true;
+            return;
+        }
+        
         if (ignoreCount > 0) {
             ignoreCount--;
             return;
@@ -151,7 +163,7 @@ public class JavacErrorWriter extends Writer
             }
             else {
                 // if not what we were expecting, bail out
-                haserror = true;  
+                ignore = true;  
             }
             
             return;          

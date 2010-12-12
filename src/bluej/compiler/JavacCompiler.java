@@ -98,6 +98,7 @@ class JavacCompiler extends Compiler
         if (output.hasError()) {
             watcher.errorMessage(output.getFilename(),
                         output.getLineNo(),
+                        output.getColumnNo(),
                         output.getMessage());
         }
 
@@ -105,6 +106,7 @@ class JavacCompiler extends Compiler
         if (output.hasWarnings()) {
             watcher.warningMessage(output.getFilename(),
                         output.getLineNo(),
+                        output.getColumnNo(),
                         output.getWarning());
         }
         

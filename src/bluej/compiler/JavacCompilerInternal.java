@@ -146,6 +146,7 @@ class JavacCompilerInternal extends Compiler
         if (output.hasError()) {
             watcher.errorMessage(output.getFilename(),
                     output.getLineNo(),
+                    output.getColumnNo(),
                     output.getMessage());
         }
 
@@ -153,6 +154,7 @@ class JavacCompilerInternal extends Compiler
         if (output.hasWarnings()) {
             watcher.warningMessage(output.getFilename(),
                     output.getLineNo(),
+                    output.getColumnNo(),
                     output.getWarning());
         }
 
