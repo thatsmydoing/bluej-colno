@@ -41,11 +41,23 @@ public interface CompileObserver
     /**
      * An error message occurred during compilation
      */
+    void errorMessage(String filename, int lineNo, int columnNo, String message);
+    
+    /**
+     * @deprecated Replaced by {@link #errorMessage(String filename, int lineNo, int columnNo, String message)}
+     */
+    @Deprecated
     void errorMessage(String filename, int lineNo, String message);
     
     /**
      * A warning message occurred during compilation
      */
+    void warningMessage(String filename, int lineNo, int columnNo, String message);
+    
+    /**
+     * @deprecated Replaced by {@link #warningMessage(String filename, int lineNo, int columnNo, String message)}
+     */
+    @Deprecated
     void warningMessage(String filename, int lineNo, String message);
 
     /**
