@@ -118,7 +118,7 @@ public class CompileEvent implements ExtensionEvent
    */
   public void setErrorColumnNumber ( int aColumnNumber )
     {
-    errorLineNumber = aColumnNumber;
+    errorColumnNumber = aColumnNumber;
     }
 
   /**

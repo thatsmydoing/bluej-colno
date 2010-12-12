@@ -2179,7 +2179,7 @@ public final class Package extends Graph
             if (bringToFront || !editor.isShowing()) {
                 t.open();
             }
-            editor.displayMessage(messageCalc.calculateMessage(editor), lineNo, 0, beep, setStepMark, help);
+            editor.displayMessage(messageCalc.calculateMessage(editor), lineNo, columnNo, beep, setStepMark, help);
         }
         else {
             Debug.message(t.getDisplayName() + ", line" + lineNo + ": " + messageCalc.calculateMessage(null));
@@ -2657,11 +2657,11 @@ public final class Package extends Graph
             
             // See if we can help the user a bit more if they've mis-spelt a method:
             if (message.contains("cannot find symbol - method")) {
-                messageShown = showEditorMessage(filename, lineNo,
+                messageShown = showEditorMessage(filename, lineNo, columnNo,
                         new MisspeltMethodChecker(message, lineNo, project), true, true,
                         false, Config.compilertype);
             } else {
-                messageShown = showEditorMessage(filename, lineNo, message, true, true, false,
+                messageShown = showEditorMessage(filename, lineNo, columnNo, message, true, true, false,
                         Config.compilertype);
             }
             // Display the error message in the source editor

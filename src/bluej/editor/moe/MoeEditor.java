@@ -547,9 +547,18 @@ implements bluej.editor.Editor, BlueJEventListener, HyperlinkListener, DocumentL
         }
 
         // highlight the line
-
-        sourcePane.setCaretPosition(pos);
-        sourcePane.moveCaretPosition(line.getEndOffset() - 1);
+        if (column > 0) {
+            if(pos+column == line.getEndOffset()) {
+              sourcePane.setCaretPosition(pos+column-1);
+              insertText(" ", false);
+            }
+            sourcePane.setCaretPosition(pos+column-1);
+            sourcePane.moveCaretPosition(pos+column);
+        }
+        else {
+            sourcePane.setCaretPosition(pos);
+            sourcePane.moveCaretPosition(line.getEndOffset() - 1);
+        }
         moeCaret.setPersistentHighlight();
         // w/o line break
 

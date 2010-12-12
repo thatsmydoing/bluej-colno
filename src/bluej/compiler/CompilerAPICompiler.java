@@ -199,7 +199,7 @@ public class CompilerAPICompiler extends Compiler
      * Processes messages returned from the compiler. This just slightly adjusts the format of some
      * messages.
      */
-    protected String processMessage(String src, long pos, String message)
+    protected String processMessage(String src, int pos, String message)
     {
         // For JDK 6, the message is in this format: 
         //   path and filename:line number:message
@@ -254,11 +254,5 @@ public class CompilerAPICompiler extends Compiler
             }
         }
         return message;
-    }
-    
-    @Deprecated
-    protected String processMessage(String src, int pos, String message)
-    {
-        return processMessage(src, pos, message);
     }
 }
